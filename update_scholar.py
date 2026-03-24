@@ -1,5 +1,4 @@
 import re
-import json
 import urllib.request
 import ssl
 from bs4 import BeautifulSoup
@@ -69,7 +68,7 @@ def update_html(publications):
     for pub in publications:
         new_html += f"                        <li><a href='{pub['link']}' target='_blank'><strong>{pub['title']}</strong></a><br>\n"
         new_html += f"                        <em>{pub['authors']}</em><br>\n"
-        new_html += f"                        {pub['journal']}</li><br>\n"
+        new_html += f"                        {pub['journal']}<br></li>\n"
     new_html += "                        <!-- PUBLICATIONS END -->"
     
     # Replace the old list with the new one
