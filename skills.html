@@ -79,11 +79,13 @@
 			<hr />
 
 			<h4>Arrow Volume Tracker (Interactive Sample)</h4>
-			<p>This is a web-based sample of my Python arrow tracker script. Feel free to add or delete entries to see the chart update!</p>
-			
+			<p>This is a web-based sample of my Python arrow tracker script. If the tracker detects a steep increase in
+				volume, it produces a warning message! <br>
+				Feel free to add or delete entries to see the chart update!</p>
+
 			<div class="row gtr-uniform">
 				<div class="col-5 col-12-xsmall">
-					<input type="date" id="arrow-date" value=""/>
+					<input type="date" id="arrow-date" value="" />
 				</div>
 				<div class="col-5 col-12-xsmall">
 					<input type="number" id="arrow-volume" placeholder="Number of arrows" min="1" />
@@ -93,26 +95,26 @@
 				</div>
 			</div>
 
-				<hr>
-				<h5>Arrow Volume Over Time</h5>
-				<canvas id="arrowChart" width="400" height="200"></canvas>
+			<hr>
+			<h5>Arrow Volume Over Time</h5>
+			<canvas id="arrowChart" width="400" height="200"></canvas>
 
-				<hr>
-				<h5>Volume History</h5>
-				<div class="table-wrapper">
-					<table id="arrow-history-table" class="alt">
-						<thead>
-							<tr>
-								<th>Date</th>
-								<th>Arrows</th>
-								<th>Action</th>
-							</tr>
-						</thead>
-						<tbody>
-							<!-- JS will populate this -->
-						</tbody>
-					</table>
-				</div>
+			<hr>
+			<h5>Volume History</h5>
+			<div class="table-wrapper">
+				<table id="arrow-history-table" class="alt">
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Arrows</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- JS will populate this -->
+					</tbody>
+				</table>
+			</div>
 		</section>
 
 		<!-- Four -->
