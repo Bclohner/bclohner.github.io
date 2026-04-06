@@ -46,4 +46,7 @@ def main():
             show_history()
         elif choice == "3":
             print("Good shooting today.")
-           
+            break
+
+if __name__ == "__main__":
+    main()
