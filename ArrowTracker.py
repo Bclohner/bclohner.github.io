@@ -8,6 +8,35 @@ except ImportError:
 
 FILENAME = "arrow_volume.csv"
 
+def check_for_jump(new_date, new_volume):
+    try:
+        with open(FILENAME, mode="r") as file:
+            reader = csv.reader(file)
+            rows = list(reader)[1:]
+            
+        history = []
+        for row in rows:
+            if row:
+                try:
+                    dt = datetime.strptime(row[0], "%Y-%m-%d").date()
+                    vol = int(row[1])
+                    history.append((dt, vol))
+                except ValueError:
+                    pass
+                    
+        history.sort(key=lambda x: x[0])
+        
+        prev_vol = None
+        for dt, vol in reversed(history):
+            if dt < new_date:
+                prev_vol = vol
+                break
+                
+        if prev_vol is not None and (new_volume - prev_vol) > 80:
+            print("\n⚠️ Careful! That is a big jump!")
+    except Exception:
+        pass
+
 def add_entry():
     volume = int(input("Enter the number of arrows shot today: "))
 
@@ -24,6 +53,7 @@ def add_entry():
         writer.writerow([date.today(), volume])
 
     print(f"Recorded {volume} arrows for {date.today()}")
+    check_for_jump(date.today(), volume)
 
 def add_retroactive_entry():
     date_str = input("Enter the date (YYYY-MM-DD): ")
@@ -53,6 +83,7 @@ def add_retroactive_entry():
         writer.writerow([entry_date, volume])
 
     print(f"Recorded {volume} arrows for {entry_date}")
+    check_for_jump(entry_date, volume)
 
 def show_history():
     try:

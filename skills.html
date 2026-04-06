@@ -75,31 +75,30 @@
 					</ul>
 				</div>
 			</div>
-			
+
 			<hr />
+
+			<h4>Arrow Volume Tracker (Interactive Sample)</h4>
+			<p>This is a web-based sample of my Python arrow tracker script. Feel free to add or delete entries to see the chart update!</p>
 			
-			<div class="box">
-				<h4>Arrow Volume Tracker (Interactive Sample)</h4>
-				<p>This is a web-based sample of my Python arrow tracker script. Feel free to add or delete entries to see the chart update!</p>
-				
-				<div class="row gtr-uniform">
-					<div class="col-5 col-12-xsmall">
-						<input type="date" id="arrow-date" value=""/>
-					</div>
-					<div class="col-5 col-12-xsmall">
-						<input type="number" id="arrow-volume" placeholder="Number of arrows" min="1"/>
-					</div>
-					<div class="col-2 col-12-xsmall">
-						<button id="arrow-add-btn" class="button primary fit">Add</button>
-					</div>
+			<div class="row gtr-uniform">
+				<div class="col-5 col-12-xsmall">
+					<input type="date" id="arrow-date" value=""/>
 				</div>
+				<div class="col-5 col-12-xsmall">
+					<input type="number" id="arrow-volume" placeholder="Number of arrows" min="1" />
+				</div>
+				<div class="col-2 col-12-xsmall">
+					<button id="arrow-add-btn" class="button primary fit">Add</button>
+				</div>
+			</div>
 
 				<hr>
-				<h5>Volume Over Time</h5>
+				<h5>Arrow Volume Over Time</h5>
 				<canvas id="arrowChart" width="400" height="200"></canvas>
-				
+
 				<hr>
-				<h5>History Viewer</h5>
+				<h5>Volume History</h5>
 				<div class="table-wrapper">
 					<table id="arrow-history-table" class="alt">
 						<thead>
@@ -114,7 +113,6 @@
 						</tbody>
 					</table>
 				</div>
-			</div>
 		</section>
 
 		<!-- Four -->
@@ -462,7 +460,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 	<script src="assets/js/breakpoints.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<script>
-		document.addEventListener("DOMContentLoaded", function() {
+		document.addEventListener("DOMContentLoaded", function () {
 			// Initial dummy data
 			let arrowData = [
 				{ date: "2026-03-01", arrows: 100 },
@@ -482,14 +480,19 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 				// 1. Update Table
 				const tbody = document.querySelector("#arrow-history-table tbody");
 				tbody.innerHTML = "";
-				if(arrowData.length === 0) {
+				if (arrowData.length === 0) {
 					tbody.innerHTML = "<tr><td colspan='3'>No history yet. Start logging your arrows!</td></tr>";
 				} else {
 					arrowData.forEach((entry, index) => {
+						let warningHTML = "";
+						if (index > 0 && (entry.arrows - arrowData[index - 1].arrows) > 80) {
+							warningHTML = `<br><span style="color: #ff9999; font-size: 0.8em; font-weight: bold;">⚠️ Careful! That is a big jump!</span>`;
+						}
+
 						const tr = document.createElement("tr");
 						tr.innerHTML = `
 							<td>${entry.date}</td>
-							<td>${entry.arrows}</td>
+							<td>${entry.arrows}${warningHTML}</td>
 							<td><button class="button small" onclick="deleteArrowEntry(${index})">Delete</button></td>
 						`;
 						tbody.appendChild(tr);
@@ -528,10 +531,10 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 			}
 
 			// Add entry
-			document.getElementById('arrow-add-btn').addEventListener('click', function() {
+			document.getElementById('arrow-add-btn').addEventListener('click', function () {
 				const dateVal = document.getElementById('arrow-date').value;
 				const volVal = parseInt(document.getElementById('arrow-volume').value);
-				
+
 				if (!dateVal || isNaN(volVal) || volVal <= 0) {
 					alert("Please enter a valid date and arrow volume.");
 					return;
@@ -542,7 +545,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 			});
 
 			// Delete entry
-			window.deleteArrowEntry = function(index) {
+			window.deleteArrowEntry = function (index) {
 				arrowData.splice(index, 1);
 				renderTracker();
 			};
