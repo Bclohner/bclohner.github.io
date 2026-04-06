@@ -64,6 +64,45 @@
 								Here</a> to see a game I created using the scratch software</li>
 						<li>This is an example of some data processing I did in python!</li>
 					</ul>
+					
+					<div class="box">
+						<h4>Arrow Volume Tracker (Interactive Sample)</h4>
+						<p>This is a web-based sample of my Python arrow tracker script. Feel free to add or delete entries to see the chart update!</p>
+						
+						<div class="row gtr-uniform">
+							<div class="col-5 col-12-xsmall">
+								<input type="date" id="arrow-date" value=""/>
+							</div>
+							<div class="col-5 col-12-xsmall">
+								<input type="number" id="arrow-volume" placeholder="Number of arrows" min="1"/>
+							</div>
+							<div class="col-2 col-12-xsmall">
+								<button id="arrow-add-btn" class="button primary fit">Add</button>
+							</div>
+						</div>
+
+						<hr>
+						<h5>Volume Over Time</h5>
+						<canvas id="arrowChart" width="400" height="200"></canvas>
+						
+						<hr>
+						<h5>History Viewer</h5>
+						<div class="table-wrapper">
+							<table id="arrow-history-table" class="alt">
+								<thead>
+									<tr>
+										<th>Date</th>
+										<th>Arrows</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									<!-- JS will populate this -->
+								</tbody>
+							</table>
+						</div>
+					</div>
+					
 				</div>
 				<div class="col-6 col-12-small">
 					<h3>Future Goals</h3>
@@ -420,6 +459,97 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 	<script src="assets/js/jquery.poptrox.min.js"></script>
 	<script src="assets/js/browser.min.js"></script>
 	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			// Initial dummy data
+			let arrowData = [
+				{ date: "2026-03-01", arrows: 100 },
+				{ date: "2026-03-05", arrows: 150 },
+				{ date: "2026-03-10", arrows: 120 }
+			];
+
+			// Set today's date as default
+			document.getElementById('arrow-date').valueAsDate = new Date();
+
+			let arrowChart = null;
+
+			function renderTracker() {
+				// Sort data by date
+				arrowData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+				// 1. Update Table
+				const tbody = document.querySelector("#arrow-history-table tbody");
+				tbody.innerHTML = "";
+				if(arrowData.length === 0) {
+					tbody.innerHTML = "<tr><td colspan='3'>No history yet. Start logging your arrows!</td></tr>";
+				} else {
+					arrowData.forEach((entry, index) => {
+						const tr = document.createElement("tr");
+						tr.innerHTML = `
+							<td>${entry.date}</td>
+							<td>${entry.arrows}</td>
+							<td><button class="button small" onclick="deleteArrowEntry(${index})">Delete</button></td>
+						`;
+						tbody.appendChild(tr);
+					});
+				}
+
+				// 2. Update Chart
+				const ctx = document.getElementById('arrowChart').getContext('2d');
+				const labels = arrowData.map(d => d.date);
+				const data = arrowData.map(d => d.arrows);
+
+				if (arrowChart) {
+					arrowChart.destroy();
+				}
+
+				arrowChart = new Chart(ctx, {
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: 'Arrows Shot',
+							data: data,
+							borderColor: 'rgba(54, 162, 235, 1)',
+							backgroundColor: 'rgba(54, 162, 235, 0.2)',
+							borderWidth: 2,
+							tension: 0.1,
+							fill: true
+						}]
+					},
+					options: {
+						scales: {
+							y: { beginAtZero: true }
+						}
+					}
+				});
+			}
+
+			// Add entry
+			document.getElementById('arrow-add-btn').addEventListener('click', function() {
+				const dateVal = document.getElementById('arrow-date').value;
+				const volVal = parseInt(document.getElementById('arrow-volume').value);
+				
+				if (!dateVal || isNaN(volVal) || volVal <= 0) {
+					alert("Please enter a valid date and arrow volume.");
+					return;
+				}
+
+				arrowData.push({ date: dateVal, arrows: volVal });
+				renderTracker();
+			});
+
+			// Delete entry
+			window.deleteArrowEntry = function(index) {
+				arrowData.splice(index, 1);
+				renderTracker();
+			};
+
+			// Initialize
+			renderTracker();
+		});
+	</script>
 	<script src="assets/js/util.js"></script>
 	<script src="assets/js/main.js"></script>
 
