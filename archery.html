@@ -69,35 +69,49 @@
 					<hr />
 
 					<h4>Archery Gallery</h4>
-					<div class="box alt" style="margin-top: 2em;">
-						<div class="row gtr-50 gtr-uniform">
-							<div class="col-4 col-12-xsmall"><span class="image fit"><img
-										src="images/Archery/D302086.JPEG" alt="" /></span></div>
-							<div class="col-4 col-12-xsmall"><span class="image fit"><img
-										src="images/Archery/ArcheryPortrait.JPG" alt="" /></span></div>
-							<div class="col-4 col-12-xsmall"><span class="image fit"><img
-										src="images/Archery/53796653167_d0458f21ff_o.JPG" alt="" /></span></div>
-							<div class="col-4 col-12-xsmall"><span class="image fit"><img
-										src="images/Archery/53026838001_dffba29b67_o.JPG" alt="" /></span></div>
-							<div class="col-4 col-12-xsmall"><span class="image fit"><img
-										src="images/Archery/54247869375_228750b4bb_o.jpeg" alt="" /></span></div>
-							<div class="col-4 col-12-xsmall"><span class="image fit"><img
-										src="images/Archery/54250977653_820e5c84ba_o.jpeg" alt="" /></span></div>
-							<div class="col-4 col-12-xsmall"><span class="image fit"><img
-										src="images/Archery/54558386780_562ab78045_o.jpeg" alt="" /></span></div>
-							<div class="col-4 col-12-xsmall"><span class="image fit"><img
-										src="images/Archery/54563200213_57e0a2be49_o.jpeg" alt="" /></span></div>
-							<div class="col-4 col-12-xsmall"><span class="image fit"><img
-										src="images/Archery/55026386781_11c18cb80a_o.jpeg" alt="" /></span></div>
-							<div class="col-4 col-12-xsmall"><span class="image fit"><img
-										src="images/Archery/55026661835_c4e695f7c8_o.jpeg" alt="" /></span></div>
-							<div class="col-4 col-12-xsmall"><span class="image fit"><img
-										src="images/Archery/IMG_4250.jpeg" alt="" /></span></div>
-							<div class="col-4 col-12-xsmall"><span class="image fit"><img
-										src="images/Archery/IMG_5392.jpeg" alt="" /></span></div>
-							<div class="col-4 col-12-xsmall"><span class="image fit"><img
-										src="images/Archery/IMG_5824.jpeg" alt="" /></span></div>
-						</div>
+					<style>
+						.masonry-gallery {
+							column-count: 3;
+							column-gap: 1.5em;
+							margin-top: 2em;
+						}
+						.masonry-gallery .image.fit {
+							display: inline-block;
+							width: 100%;
+							margin: 0 0 1.5em 0;
+							border-radius: 6px;
+							overflow: hidden;
+						}
+						.masonry-gallery .image.fit img {
+							width: 100%;
+							height: auto;
+							display: block;
+							transition: transform 0.2s ease;
+						}
+						.masonry-gallery .image.fit img:hover {
+							transform: scale(1.02);
+						}
+						@media screen and (max-width: 980px) {
+							.masonry-gallery { column-count: 2; }
+						}
+						@media screen and (max-width: 480px) {
+							.masonry-gallery { column-count: 1; }
+						}
+					</style>
+					<div class="masonry-gallery">
+						<span class="image fit"><img src="images/Archery/D302086.JPEG" alt="" /></span>
+						<span class="image fit"><img src="images/Archery/ArcheryPortrait.JPG" alt="" /></span>
+						<span class="image fit"><img src="images/Archery/53796653167_d0458f21ff_o.JPG" alt="" /></span>
+						<span class="image fit"><img src="images/Archery/53026838001_dffba29b67_o.JPG" alt="" /></span>
+						<span class="image fit"><img src="images/Archery/54247869375_228750b4bb_o.jpeg" alt="" /></span>
+						<span class="image fit"><img src="images/Archery/54250977653_820e5c84ba_o.jpeg" alt="" /></span>
+						<span class="image fit"><img src="images/Archery/54558386780_562ab78045_o.jpeg" alt="" /></span>
+						<span class="image fit"><img src="images/Archery/54563200213_57e0a2be49_o.jpeg" alt="" /></span>
+						<span class="image fit"><img src="images/Archery/55026386781_11c18cb80a_o.jpeg" alt="" /></span>
+						<span class="image fit"><img src="images/Archery/55026661835_c4e695f7c8_o.jpeg" alt="" /></span>
+						<span class="image fit"><img src="images/Archery/IMG_4250.jpeg" alt="" /></span>
+						<span class="image fit"><img src="images/Archery/IMG_5392.jpeg" alt="" /></span>
+						<span class="image fit"><img src="images/Archery/IMG_5824.jpeg" alt="" /></span>
 					</div>
 
 				</div>
