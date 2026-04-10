@@ -108,10 +108,8 @@
 				Here is an example of an Excel sheet I created for a class!
 
 			</p>
-			
-			<div class="table-wrapper" id="excel-container">
-				<p><em>Loading Excel Data...</em></p>
-			</div>
+			<iframe width="402" height="346" frameborder="0" scrolling="yes"
+				src="https://uofc-my.sharepoint.com/personal/brynnleigh_lohner_ucalgary_ca/_layouts/15/Doc.aspx?sourcedoc={7e260fb1-84a4-43f6-b11b-9d2c39b4c815}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True&wdInConfigurator=True"></iframe>
 
 			<hr />
 
@@ -579,7 +577,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 					var first_sheet_name = workbook.SheetNames[0];
 					var worksheet = workbook.Sheets[first_sheet_name];
 					var rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-					
+
 					let html = '<table class="alt">';
 					rows.forEach((row, rowIndex) => {
 						html += rowIndex === 0 ? '<thead><tr>' : '<tr>';
