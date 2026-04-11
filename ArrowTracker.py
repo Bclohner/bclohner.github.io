@@ -6,7 +6,7 @@ try:
 except ImportError:
     plt = None
 
-FILENAME = "arrow_volume.csv"
+FILENAME = "Documents/arrow_volume.csv"
 
 def check_for_jump(new_date, new_volume):
     try:
