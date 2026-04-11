@@ -71,14 +71,17 @@
 				Feel free to add or delete entries to see the chart update!</p>
 
 			<div class="row gtr-uniform">
-				<div class="col-5 col-12-xsmall">
+				<div class="col-4 col-12-xsmall">
 					<input type="date" id="arrow-date" value="" />
 				</div>
-				<div class="col-5 col-12-xsmall">
+				<div class="col-4 col-12-xsmall">
 					<input type="number" id="arrow-volume" placeholder="Number of arrows" min="1" />
 				</div>
-				<div class="col-2 col-12-xsmall">
-					<button id="arrow-add-btn" class="button primary fit">Add</button>
+				<div class="col-4 col-12-xsmall">
+					<input type="text" id="arrow-scores" placeholder="Scores (e.g. 290, 280)" />
+				</div>
+				<div class="col-12">
+					<button id="arrow-add-btn" class="button primary fit">Add Entry</button>
 				</div>
 			</div>
 
@@ -87,13 +90,18 @@
 			<canvas id="arrowChart" width="400" height="200"></canvas>
 
 			<hr>
-			<h5>Volume History</h5>
+			<h5>Scores Over Time</h5>
+			<canvas id="scoreChart" width="400" height="200"></canvas>
+
+			<hr>
+			<h5>Volume & Score History</h5>
 			<div class="table-wrapper">
 				<table id="arrow-history-table" class="alt">
 					<thead>
 						<tr>
 							<th>Date</th>
 							<th>Arrows</th>
+							<th>Scores</th>
 							<th>Action</th>
 						</tr>
 					</thead>
@@ -489,15 +497,16 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 		document.addEventListener("DOMContentLoaded", function () {
 			// Initial dummy data
 			let arrowData = [
-				{ date: "2026-03-01", arrows: 100 },
-				{ date: "2026-03-05", arrows: 150 },
-				{ date: "2026-03-10", arrows: 120 }
+				{ date: "2026-03-01", arrows: 100, scores: [280] },
+				{ date: "2026-03-05", arrows: 150, scores: [290, 285] },
+				{ date: "2026-03-10", arrows: 120, scores: [] }
 			];
 
 			// Set today's date as default
 			document.getElementById('arrow-date').valueAsDate = new Date();
 
 			let arrowChart = null;
+			let scoreChart = null;
 
 			function renderTracker() {
 				// Sort data by date
@@ -507,7 +516,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 				const tbody = document.querySelector("#arrow-history-table tbody");
 				tbody.innerHTML = "";
 				if (arrowData.length === 0) {
-					tbody.innerHTML = "<tr><td colspan='3'>No history yet. Start logging your arrows!</td></tr>";
+					tbody.innerHTML = "<tr><td colspan='4'>No history yet. Start logging!</td></tr>";
 				} else {
 					arrowData.forEach((entry, index) => {
 						let warningHTML = "";
@@ -515,10 +524,13 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 							warningHTML = `<br><span style="color: #ff9999; font-size: 0.8em; font-weight: bold;">⚠️ Careful! That is a big jump!</span>`;
 						}
 
+						let scoresHTML = entry.scores && entry.scores.length > 0 ? entry.scores.join(", ") : "-";
+
 						const tr = document.createElement("tr");
 						tr.innerHTML = `
 							<td>${entry.date}</td>
 							<td>${entry.arrows}${warningHTML}</td>
+							<td>${scoresHTML}</td>
 							<td><button class="button small" onclick="deleteArrowEntry(${index})">Delete</button></td>
 						`;
 						tbody.appendChild(tr);
@@ -554,19 +566,66 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 						}
 					}
 				});
+
+				// 3. Update Score Chart
+				const scoreCtx = document.getElementById('scoreChart').getContext('2d');
+				const scorePoints = [];
+				arrowData.forEach(d => {
+					if (d.scores && d.scores.length > 0) {
+						d.scores.forEach(s => {
+							scorePoints.push({ x: d.date, y: s });
+						});
+					}
+				});
+
+				if (scoreChart) {
+					scoreChart.destroy();
+				}
+
+				scoreChart = new Chart(scoreCtx, {
+					type: 'scatter',
+					data: {
+						datasets: [{
+							label: 'Shooting Scores',
+							data: scorePoints,
+							backgroundColor: 'rgba(75, 192, 192, 1)',
+							borderColor: 'rgba(75, 192, 192, 1)',
+							pointRadius: 6,
+						}]
+					},
+					options: {
+						scales: {
+							x: {
+								type: 'category',
+								labels: labels
+							},
+							y: { beginAtZero: false } // Scores typically are high
+						}
+					}
+				});
 			}
 
 			// Add entry
 			document.getElementById('arrow-add-btn').addEventListener('click', function () {
 				const dateVal = document.getElementById('arrow-date').value;
 				const volVal = parseInt(document.getElementById('arrow-volume').value);
+				const scoresVal = document.getElementById('arrow-scores').value;
 
 				if (!dateVal || isNaN(volVal) || volVal <= 0) {
 					alert("Please enter a valid date and arrow volume.");
 					return;
 				}
 
-				arrowData.push({ date: dateVal, arrows: volVal });
+				let parsedScores = [];
+				if (scoresVal.trim()) {
+					parsedScores = scoresVal.split(',')
+						.map(s => parseFloat(s.trim()))
+						.filter(n => (!isNaN(n) && n > 0));
+				}
+
+				arrowData.push({ date: dateVal, arrows: volVal, scores: parsedScores });
+				document.getElementById('arrow-volume').value = '';
+				document.getElementById('arrow-scores').value = '';
 				renderTracker();
 			});
 
