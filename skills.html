@@ -117,6 +117,7 @@
 				own shooting.</p>
 			<span class="image right"><img src="images/VidAnalysis1.png" alt="Archery Video Analysis" /></span>
 			<span class="image left"><img src="images/VidAnalysis2.png" alt="Archery Video Analysis" /></span>
+			<hr />
 
 			<div class="row">
 				<div class="col-12">
@@ -572,35 +573,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 	</script>
 	<script src="assets/js/util.js"></script>
 	<script src="assets/js/main.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-	<script>
-		document.addEventListener("DOMContentLoaded", function () {
-			fetch("Documents/AthleteTrainingData.xlsx")
-				.then(res => res.arrayBuffer())
-				.then(ab => {
-					var workbook = XLSX.read(ab, { type: "array" });
-					var first_sheet_name = workbook.SheetNames[0];
-					var worksheet = workbook.Sheets[first_sheet_name];
-					var rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-					let html = '<table class="alt">';
-					rows.forEach((row, rowIndex) => {
-						html += rowIndex === 0 ? '<thead><tr>' : '<tr>';
-						row.forEach(cell => {
-							const cellTag = rowIndex === 0 ? 'th' : 'td';
-							html += `<${cellTag}>${cell !== undefined ? cell : ''}</${cellTag}>`;
-						});
-						html += rowIndex === 0 ? '</tr></thead><tbody>' : '</tr>';
-					});
-					html += '</tbody></table>';
-					document.getElementById('excel-container').innerHTML = html;
-				})
-				.catch(err => {
-					console.error("Error loading Excel file:", err);
-					document.getElementById('excel-container').innerHTML = "<p>Error loading spreadsheet. Please ensure the file exists at Documents/AthleteTrainingData.xlsx.</p>";
-				});
-		});
-	</script>
 </body>
 
 </html>
