@@ -1808,7 +1808,7 @@ input, select, textarea {
 		margin: 0 0 1em 0;
 	}
 
-	input[type="text"],
+	input[type="text"], input[type="number"], input[type="date"],
 	input[type="password"],
 	input[type="email"],
 	select,
@@ -1867,7 +1867,7 @@ input, select, textarea {
 			display: none;
 		}
 
-	input[type="text"],
+	input[type="text"], input[type="number"], input[type="date"],
 	input[type="password"],
 	input[type="email"],
 	select {
