@@ -207,6 +207,14 @@ def generate_dashboard_html():
                         "color": "#27ae60", 
                         "allDay": True
                     })
+                    
+                # Background Color Event
+                diff = abs(d.arrows - actual_vol)
+                events.append({
+                    "start": d.date,
+                    "display": "background",
+                    "backgroundColor": "#d4edda" if diff <= 20 else "#f8d7da"
+                })
 
     all_dates_set = set()
     expected_dict = {}
@@ -486,9 +494,11 @@ class ArcheryAppHandler(http.server.BaseHTTPRequestHandler):
             check_for_jump(dt, vol)
             
             # Instantly redirect the browser back to the homepage so it naturally refreshes!
-            self.send_response(303)
-            self.send_header('Location', '/')
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html; charset=utf-8')
             self.end_headers()
+            html = "<html><body><script>alert('Good shooting!'); window.location.href='/';</script></body></html>"
+            self.wfile.write(html.encode('utf-8'))
             
     def log_message(self, format, *args):
         # Override to suppress default HTTP spammy logs and keep terminal clean for jump checks
