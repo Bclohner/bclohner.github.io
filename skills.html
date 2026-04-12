@@ -62,40 +62,43 @@
 			</div>
 			<p>I have also created a few python scripts to supplement my archery training and coaching! See this arrow
 				volume tracker as an example!</p>
-			<h4>Arrow Volume Tracker (Interactive Sample)</h4>
-			<p>Monitoring arrow volume is important in archery to build stamina, but prevent injury while doing so. I
-				have created a python script to log arrow volume over time, and it produces a visual representation as
-				well. I have since added more features to this script, including a score log as well, and a visual
-				representation of those scores.<br>
-				This is a web-based sample of my Python arrow tracker script. If the tracker detects a steep increase in
-				volume, it produces a warning message! <br>
-				Feel free to add or delete entries to see the chart update!</p>
+			<h4>Arrow Tracker Web Engine (Python Simulation)</h4>
+			<p>This is a complete client-side javascript port of my local Python webserver architecture! The browser mathematically generates a compounding 52-week training cycle exactly like my python scripts, and inherently builds a live dashboard natively mimicking the platform. Add or delete dummy entries in the form below to watch the underlying engines calculate and redraw the entire 52-week UI timeline dynamically!</p>
 
 			<div class="row gtr-uniform">
 				<div class="col-4 col-12-xsmall">
-					<input type="date" id="arrow-date" value="" />
+					<input type="date" id="arrow-date" value="" style="color: black;" />
 				</div>
 				<div class="col-4 col-12-xsmall">
-					<input type="text" inputmode="numeric" id="arrow-volume" placeholder="Number of arrows" />
+					<input type="number" id="arrow-volume" placeholder="Number of arrows" />
 				</div>
 				<div class="col-4 col-12-xsmall">
 					<input type="text" id="arrow-scores" placeholder="Scores (e.g. 290, 280)" />
 				</div>
 				<div class="col-12">
-					<button id="arrow-add-btn" class="button primary fit">Add Entry</button>
+					<button id="arrow-add-btn" class="button primary fit">Save Dummy Entry</button>
 				</div>
 			</div>
 
 			<hr>
-			<h5>Arrow Volume Over Time</h5>
-			<canvas id="arrowChart" width="400" height="200"></canvas>
+			<!-- Python Dashboard Mirror Layout -->
+			<div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+				<h5 style="color: black; border-bottom: 2px solid #efefef; padding-bottom: 10px; margin-top: 0;">📅 Cycle Calendar</h5>
+				<div id='calendar' style="color: black;"></div>
+			</div>
+
+			<div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+				<h5 style="color: black; border-bottom: 2px solid #efefef; padding-bottom: 10px; margin-top: 0;">📈 Expected Target vs Actual Volume</h5>
+				<canvas id="volChart" width="400" height="150"></canvas>
+			</div>
+
+			<div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+				<h5 style="color: black; border-bottom: 2px solid #efefef; padding-bottom: 10px; margin-top: 0;">🎯 Shooting Scores</h5>
+				<canvas id="scoreChart" width="400" height="150"></canvas>
+			</div>
 
 			<hr>
-			<h5>Scores Over Time</h5>
-			<canvas id="scoreChart" width="400" height="200"></canvas>
-
-			<hr>
-			<h5>Volume & Score History</h5>
+			<h5>Volume & Score Dummy History</h5>
 			<div class="table-wrapper">
 				<table id="arrow-history-table" class="alt">
 					<thead>
@@ -494,6 +497,8 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 	<script src="assets/js/browser.min.js"></script>
 	<script src="assets/js/breakpoints.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+	<script src='https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js'></script>
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
 			// Initial dummy data
@@ -509,6 +514,53 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 			let arrowChart = null;
 			let scoreChart = null;
 
+			function getYearCycle(earliestDate) {
+				const WEEK_FACTORS = {"Base Week": 1.00, "+10% Week": 1.10, "Max Week +20%": 1.20, "Recovery Week -25%": 0.75};
+				const WEEK_ORDER = ["Base Week", "+10% Week", "Max Week +20%", "Recovery Week -25%"];
+				const MULTIPLIERS = {"Monday": 0, "Tuesday": 0.2, "Wednesday": 0, "Thursday": 0.2, "Friday": 0, "Saturday": 0.3, "Sunday": 0.3};
+				const DAYS_MAP = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+				
+				let cycle = [];
+				let currentBaseVolume = 400; // Base baseline
+                
+                let startDiff = earliestDate.getDay() === 0 ? 6 : earliestDate.getDay() - 1;
+                let currentStart = new Date(earliestDate);
+                currentStart.setDate(currentStart.getDate() - startDiff);
+
+				for (let cycleIdx = 0; cycleIdx < 13; cycleIdx++) {
+					WEEK_ORDER.forEach((weekLabel, wIdx) => {
+						let weekStart = new Date(currentStart);
+						weekStart.setDate(weekStart.getDate() + (7 * wIdx));
+						
+						let factor = WEEK_FACTORS[weekLabel];
+						let targetVolume = Math.round(currentBaseVolume * factor);
+						
+						for (let offset = 0; offset < 7; offset++) {
+							let dt = new Date(weekStart);
+							dt.setDate(dt.getDate() + offset);
+							
+							let dayName = DAYS_MAP[dt.getDay()];
+							let mult = MULTIPLIERS[dayName] || 0;
+							let arrows = Math.round(targetVolume * mult);
+							
+                            const dtIso = dt.toISOString().split('T')[0];
+							cycle.push({
+								date: dtIso,
+								day: dayName,
+								phase: weekLabel,
+								arrows: arrows
+							});
+						}
+					});
+					
+					currentStart.setDate(currentStart.getDate() + 28);
+					currentBaseVolume *= 1.10;
+				}
+				return cycle;
+			}
+
+			let calendar = null;
+
 			function renderTracker() {
 				// Sort data by date
 				arrowData.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -522,7 +574,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 					arrowData.forEach((entry, index) => {
 						let warningHTML = "";
 						if (index > 0 && (entry.arrows - arrowData[index - 1].arrows) > 80) {
-							warningHTML = `<br><span style="color: #ff9999; font-size: 0.8em; font-weight: bold;">⚠️ Careful! That is a big jump!</span>`;
+							warningHTML = `<br><span style="color: #ff9999; font-size: 0.8em; font-weight: bold;">⚠️ Careful! Big jump!</span>`;
 						}
 
 						let scoresHTML = entry.scores && entry.scores.length > 0 ? entry.scores.join(", ") : "-";
@@ -538,69 +590,148 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 					});
 				}
 
-				// 2. Update Chart
-				const ctx = document.getElementById('arrowChart').getContext('2d');
-				const labels = arrowData.map(d => d.date);
-				const data = arrowData.map(d => d.arrows);
+                // 2. Compute Python Server Simulation Data Matrices
+                let logs = {};
+                arrowData.forEach(d => { logs[d.date] = d; });
+                
+                let earliestDateStr = arrowData.length > 0 ? arrowData[0].date : new Date().toISOString().split('T')[0];
+                let expectedCycle = getYearCycle(new Date(earliestDateStr));
+                
+                let events = [];
+                const colorMap = { "Base Week": "#3788d8", "+10% Week": "#f39c12", "Max Week +20%": "#e74c3c", "Recovery Week -25%": "#2ecc71" }
+                
+                let allDatesSet = new Set();
+                let actualDict = {};
+                let expectedDict = {};
+                let scorePoints = [];
 
-				if (arrowChart) {
-					arrowChart.destroy();
-				}
+                // Replicate exact generator layout logic
+                expectedCycle.forEach(d => {
+                    let hasActual = !!logs[d.date];
+                    let actInfo = logs[d.date];
+                    
+                    if (d.arrows > 0) {
+                        allDatesSet.add(d.date);
+                        expectedDict[d.date] = d.arrows;
+                        events.push({ title: `Expected Arrow volume: ${d.arrows}`, start: d.date, color: colorMap[d.phase], allDay: true, extendedProps: { phase: d.phase } });
+                    }
+                    if (hasActual) {
+                        allDatesSet.add(d.date);
+                        actualDict[d.date] = actInfo.arrows;
+                        events.push({ title: `Shot Arrows: ${actInfo.arrows}`, start: d.date, color: "#8e44ad", allDay: true });
+                        if(actInfo.scores && actInfo.scores.length > 0) {
+                             events.push({ title: `Scores: ${actInfo.scores.join(", ")}`, start: d.date, color: "#27ae60", allDay: true });
+                             actInfo.scores.forEach(s => scorePoints.push({x: d.date, y: s}));
+                        }
+                    }
+                });
 
+                // Capture off-cycle dummy days natively
+                arrowData.forEach(d => {
+                    if (actualDict[d.date] === undefined) { 
+                        allDatesSet.add(d.date);
+                        actualDict[d.date] = d.arrows;
+                        events.push({ title: `Shot Arrows: ${d.arrows}`, start: d.date, color: "#7f8c8d", allDay: true }); // grey for unplanned simulation
+                        if(d.scores && d.scores.length > 0) {
+                             events.push({ title: `Scores: ${d.scores.join(", ")}`, start: d.date, color: "#27ae60", allDay: true });
+                             d.scores.forEach(s => scorePoints.push({x: d.date, y: s}));
+                        }
+                    }
+                });
+
+                let volLabels = Array.from(allDatesSet).sort();
+                let expectedData = volLabels.map(dt => expectedDict[dt] !== undefined ? expectedDict[dt] : null);
+                let actualData = volLabels.map(dt => actualDict[dt] !== undefined ? actualDict[dt] : null);
+
+                let firstDate = volLabels.length > 0 ? volLabels[0] : new Date().toISOString().split('T')[0];
+                let lastDate = volLabels.length > 0 ? volLabels[volLabels.length-1] : new Date().toISOString().split('T')[0];
+
+                // 3. Render Simulated Calendar
+                if (calendar) { calendar.destroy(); }
+                var calendarEl = document.getElementById('calendar');
+                calendar = new FullCalendar.Calendar(calendarEl, {
+                  initialView: 'dayGridMonth',
+                  firstDay: 1,
+                  initialDate: new Date().toISOString().split('T')[0],
+                  headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
+                  events: events,
+                  eventClick: function(info) {
+                    if(info.event.extendedProps.phase) {
+                        alert('Training Phase: ' + info.event.extendedProps.phase + '\\n' + info.event.title);
+                    }
+                  }
+                });
+                calendar.render();
+
+				// 4. Update Volume Chart Proxy
+				if (arrowChart) { arrowChart.destroy(); }
+				const ctx = document.getElementById('volChart').getContext('2d');
 				arrowChart = new Chart(ctx, {
 					type: 'line',
 					data: {
-						labels: labels,
-						datasets: [{
-							label: 'Arrows Shot',
-							data: data,
-							borderColor: 'rgba(54, 162, 235, 1)',
-							backgroundColor: 'rgba(54, 162, 235, 0.2)',
-							borderWidth: 2,
-							tension: 0.1,
-							fill: true
-						}]
+						labels: volLabels,
+						datasets: [
+                            {
+                                label: 'Shot Arrows',
+                                data: actualData,
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 3,
+                                tension: 0.1,
+                                fill: false,
+                                spanGaps: true,
+                                pointRadius: 4
+                            },
+                            {
+                                label: 'Expected Arrow volume',
+                                data: expectedData,
+                                borderColor: 'rgba(150, 150, 150, 0.8)',
+                                borderWidth: 2,
+                                borderDash: [5, 5],
+                                tension: 0.1,
+                                fill: false,
+                                spanGaps: true,
+                                pointRadius: 0
+                            }
+                        ]
 					},
 					options: {
 						scales: {
+							x: {
+                                type: 'time',
+                                time: { unit: 'month', displayFormats: { month: 'MMM yyyy' } },
+                                min: firstDate,
+                                max: lastDate,
+                                title: { display: true, text: 'Month' }
+                            },
 							y: { beginAtZero: true }
 						}
 					}
 				});
 
-				// 3. Update Score Chart
+				// 5. Update Score Chart Proxy
+				if (scoreChart) { scoreChart.destroy(); }
 				const scoreCtx = document.getElementById('scoreChart').getContext('2d');
-				const scorePoints = [];
-				arrowData.forEach(d => {
-					if (d.scores && d.scores.length > 0) {
-						d.scores.forEach(s => {
-							scorePoints.push({ x: d.date, y: s });
-						});
-					}
-				});
-
-				if (scoreChart) {
-					scoreChart.destroy();
-				}
-
 				scoreChart = new Chart(scoreCtx, {
 					type: 'scatter',
 					data: {
 						datasets: [{
-							label: 'Shooting Scores',
+							label: 'Scores',
 							data: scorePoints,
-							backgroundColor: 'rgba(75, 192, 192, 1)',
-							borderColor: 'rgba(75, 192, 192, 1)',
+							backgroundColor: 'rgba(46, 204, 113, 1)',
+							borderColor: 'rgba(46, 204, 113, 1)',
 							pointRadius: 6,
 						}]
 					},
 					options: {
 						scales: {
 							x: {
-								type: 'category',
-								labels: labels
-							},
-							y: { beginAtZero: false } // Scores typically are high
+                                type: 'time',
+                                time: { unit: 'month', displayFormats: { month: 'MMM yyyy' } },
+                                min: firstDate,
+                                max: lastDate,
+                                title: { display: true, text: 'Month' }
+                            },
+							y: { beginAtZero: false } 
 						}
 					}
 				});
