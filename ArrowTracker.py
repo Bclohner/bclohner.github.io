@@ -180,7 +180,7 @@ def generate_dashboard_html():
             # Event 1: Expected Target
             if d.arrows > 0:
                 events.append({
-                    "title": f"Expected Arrow volume: {d.arrows}",
+                    "title": f"Expected: {d.arrows}",
                     "start": d.date,
                     "color": color,
                     "allDay": True,
@@ -193,7 +193,7 @@ def generate_dashboard_html():
             if has_actual:
                 actual_vol = actual_info["arrows"]
                 events.append({
-                    "title": f"Shot Arrows: {actual_vol}",
+                    "title": f"Shot: {actual_vol}",
                     "start": d.date,
                     "color": "#8e44ad", 
                     "allDay": True
@@ -208,12 +208,15 @@ def generate_dashboard_html():
                         "allDay": True
                     })
                     
-                # Background Color Event
+            # Background Color Event (Past days or logged days)
+            today_str = date.today().isoformat()
+            if has_actual or (d.date <= today_str and d.arrows > 0):
+                actual_vol = actual_info["arrows"] if has_actual else 0
                 diff = abs(d.arrows - actual_vol)
                 events.append({
                     "start": d.date,
                     "display": "background",
-                    "backgroundColor": "#d4edda" if diff <= 20 else "#f8d7da"
+                    "color": "#d4edda" if diff <= 20 else "#f8d7da"
                 })
 
     all_dates_set = set()
@@ -453,6 +456,7 @@ class ArcheryAppHandler(http.server.BaseHTTPRequestHandler):
         if self.path == '/' or self.path == '/dashboard':
             self.send_response(200)
             self.send_header('Content-type', 'text/html; charset=utf-8')
+            self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')
             self.end_headers()
             
             # Dynamically generate and stream the HTML exactly like a modern server

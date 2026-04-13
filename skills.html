@@ -656,6 +656,14 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 							actInfo.scores.forEach(s => scorePoints.push({ x: d.date, y: s }));
 						}
 					}
+					
+					let todayStr = new Date().toISOString().split('T')[0];
+					if (hasActual || (d.date <= todayStr && d.arrows > 0)) {
+						let actualVol = hasActual ? actInfo.arrows : 0;
+						let diff = Math.abs(d.arrows - actualVol);
+						let bg = diff <= 20 ? "#d4edda" : "#f8d7da";
+						events.push({ start: d.date, display: 'background', color: bg });
+					}
 				});
 
 				// Capture off-cycle dummy days natively
@@ -668,6 +676,9 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 							events.push({ title: `Scores: ${d.scores.join(", ")}`, start: d.date, color: "#27ae60", allDay: true });
 							d.scores.forEach(s => scorePoints.push({ x: d.date, y: s }));
 						}
+						let diff = d.arrows;
+						let bg = diff <= 20 ? "#d4edda" : "#f8d7da";
+						events.push({ start: d.date, display: 'background', color: bg });
 					}
 				});
 
@@ -791,6 +802,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 				document.getElementById('arrow-volume').value = '';
 				document.getElementById('arrow-scores').value = '';
 				renderTracker();
+				alert("Good shooting!");
 			});
 
 			// Delete entry
