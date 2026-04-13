@@ -7,7 +7,7 @@ from sklearn.linear_model import LinearRegression
 # ---------------------------------------------------------
 # PEAK BONUS (Recovery Week)
 # ---------------------------------------------------------
-PEAK_BONUS = 8
+PEAK_BONUS = 3
 
 # ---------------------------------------------------------
 # PATH TO YOUR CSV IN Documents/Website/Documents
@@ -55,8 +55,12 @@ def train_model(past_data):
 def predict_score(model, arrow_volume, week_type="Base"):
     pred = model.predict([[arrow_volume]])[0]
 
+    # Add peak bonus during Recovery Week
     if week_type == "Recovery":
         pred += PEAK_BONUS
+
+    # Clamp to valid archery score range
+    pred = max(0, min(pred, 300))
 
     return round(pred, 1)
 
