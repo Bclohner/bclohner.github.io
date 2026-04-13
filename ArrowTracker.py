@@ -60,19 +60,19 @@ def generate_4w_cycle(start_date: str, base_volume: int, multipliers=None):
     start = datetime.strptime(start_date, "%Y-%m-%d").date()
     all_weeks = []
 
-    for i, week_label in enumerate(WEEK_ORDER):
-        week_start = start + timedelta(days=7 * i)
-        factor = WEEK_FACTORS[week_label]
-        target_volume = int(base_volume * factor)
+    for i, week_label in enumerate(WEEK_ORDER): #iterates through the week order
+        week_start = start + timedelta(days=7 * i) #calculates the start date of the week
+        factor = WEEK_FACTORS[week_label] #gets the factor for the week
+        target_volume = int(base_volume * factor) #calculates the target volume
         days = []
         weekly_total = 0
 
-        for offset in range(7):
-            dt = week_start + timedelta(days=offset)
-            day_name = dt.strftime("%A")
-            mult = multipliers.get(day_name, 0)
-            arrows = int(target_volume * mult)
-            weekly_total += arrows
+        for offset in range(7): #iterates through the days of the week
+            dt = week_start + timedelta(days=offset) #calculates the date of the day
+            day_name = dt.strftime("%A") #gets the name of the day
+            mult = multipliers.get(day_name, 0) #gets the multiplier for the day
+            arrows = int(target_volume * mult) #calculates the number of arrows for the day
+            weekly_total += arrows #adds the number of arrows to the weekly total
 
             days.append(DayPlan(
                 date=str(dt),
@@ -90,11 +90,11 @@ def generate_4w_cycle(start_date: str, base_volume: int, multipliers=None):
 
     return all_weeks
 
-def get_base_cycle_start():
+def get_base_cycle_start(): #gets the base cycle start
     earliest = None
     try:
-        if os.path.isfile(FILENAME):
-            with open(FILENAME, mode="r") as file:
+        if os.path.isfile(FILENAME): #checks if the file exists
+            with open(FILENAME, mode="r") as file: #opens the file
                 reader = csv.reader(file)
                 rows = list(reader)[1:]
                 for row in rows:
@@ -111,10 +111,10 @@ def get_base_cycle_start():
     start_diff = earliest.weekday()
     return earliest - timedelta(days=start_diff)
 
-def get_year_cycle():
+def get_year_cycle(): #gets the year cycle
     cycle = []
-    base_start = get_base_cycle_start()
-    current_start = base_start
+    base_start = get_base_cycle_start() #gets the base cycle start
+    current_start = base_start #sets the current start date
     current_base_volume = float(BASE_VOLUME)
     for _ in range(13): 
         cycle.extend(generate_4w_cycle(
@@ -142,12 +142,12 @@ def get_actual_logs():
             pass
     return logs
 
-def check_for_jump(new_date, new_volume):
-    history = get_actual_logs()
-    sorted_dates = sorted(history.keys())
+def check_for_jump(new_date, new_volume): #checks for jumps in arrow volume
+    history = get_actual_logs() #gets the actual logs
+    sorted_dates = sorted(history.keys()) #sorts the dates
     
     prev_vol = None
-    for dt_str in reversed(sorted_dates):
+    for dt_str in reversed(sorted_dates): #iterates through the dates in reverse order
         if datetime.strptime(dt_str, "%Y-%m-%d").date() < new_date:
             prev_vol = history[dt_str]["arrows"]
             break
@@ -178,7 +178,7 @@ def generate_dashboard_html():
             actual_info = logs.get(d.date)
             
             # Event 1: Expected Target
-            if d.arrows > 0:
+            if d.arrows > 0: #if the expected volume is greater than 0
                 events.append({
                     "title": f"Expected: {d.arrows}",
                     "start": d.date,
@@ -187,20 +187,20 @@ def generate_dashboard_html():
                     "extendedProps": {
                         "phase": week.label
                     }
-                })
+                }) #adds the expected target to the events list
             
             # Event 2: Shot Arrows
-            if has_actual:
-                actual_vol = actual_info["arrows"]
+            if has_actual: #if the actual volume is greater than 0
+                actual_vol = actual_info["arrows"] #gets the actual volume
                 events.append({
                     "title": f"Shot: {actual_vol}",
                     "start": d.date,
                     "color": "#8e44ad", 
                     "allDay": True
-                })
+                }) #adds the actual volume to the events list
 
                 # Event 3: Scores
-                if actual_info.get("scores"):
+                if actual_info.get("scores"): #if the scores are greater than 0
                     events.append({
                         "title": f"Scores: {actual_info['scores']}",
                         "start": d.date,
@@ -210,24 +210,24 @@ def generate_dashboard_html():
                     
             # Background Color Event (Past days or logged days)
             today_str = date.today().isoformat()
-            if has_actual or (d.date <= today_str and d.arrows > 0):
-                actual_vol = actual_info["arrows"] if has_actual else 0
-                diff = abs(d.arrows - actual_vol)
+            if has_actual or (d.date <= today_str and d.arrows > 0): #if the actual volume is greater than 0 or the date is less than today
+                actual_vol = actual_info["arrows"] if has_actual else 0 #gets the actual volume
+                diff = abs(d.arrows - actual_vol) #calculates the difference between the actual volume and the expected volume
                 events.append({
                     "start": d.date,
                     "display": "background",
                     "color": "#d4edda" if diff <= 20 else "#f8d7da"
                 })
 
-    all_dates_set = set()
-    expected_dict = {}
-    actual_dict = {}
-    score_points = []
+    all_dates_set = set() #creates a set of all the dates
+    expected_dict = {} #creates a dictionary of expected volumes
+    actual_dict = {} #creates a dictionary of actual volumes
+    score_points = [] #creates a list of score points
     
-    for dt_str in logs:
-        all_dates_set.add(dt_str)
-        actual_dict[dt_str] = logs[dt_str]["arrows"]
-        sc_str = logs[dt_str]["scores"]
+    for dt_str in logs: #iterates through the logs
+        all_dates_set.add(dt_str) #adds the date to the set
+        actual_dict[dt_str] = logs[dt_str]["arrows"] #adds the actual volume to the dictionary
+        sc_str = logs[dt_str]["scores"] #gets the scores
         if sc_str:
             try:
                 for s in sc_str.split(","):
@@ -236,15 +236,15 @@ def generate_dashboard_html():
             except Exception:
                 pass
                 
-    for week in cycle_data:
-        for d in week.days:
-            if d.arrows > 0:
-                all_dates_set.add(d.date)
-                expected_dict[d.date] = d.arrows
+    for week in cycle_data: #iterates through the week cycle
+        for d in week.days: #iterates through the days of the week
+            if d.arrows > 0: #if the expected volume is greater than 0
+                all_dates_set.add(d.date) #adds the date to the set
+                expected_dict[d.date] = d.arrows #adds the expected volume to the dictionary
                 
-    volLabels = sorted(list(all_dates_set))
-    expectedData = [expected_dict.get(dt, 'null') for dt in volLabels]
-    actualData = [actual_dict.get(dt, 'null') for dt in volLabels]
+    volLabels = sorted(list(all_dates_set)) #sorts the dates
+    expectedData = [expected_dict.get(dt, 'null') for dt in volLabels] #gets the expected volume
+    actualData = [actual_dict.get(dt, 'null') for dt in volLabels] #gets the actual volume
     
     expectedDataStr = "[" + ",".join(str(e) for e in expectedData) + "]"
     actualDataStr = "[" + ",".join(str(e) for e in actualData) + "]"
@@ -451,12 +451,12 @@ def generate_dashboard_html():
 # BACKEND WEB SERVER
 # ---------------------------------------------------------
 
-class ArcheryAppHandler(http.server.BaseHTTPRequestHandler):
-    def do_GET(self):
-        if self.path == '/' or self.path == '/dashboard':
-            self.send_response(200)
-            self.send_header('Content-type', 'text/html; charset=utf-8')
-            self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')
+class ArcheryAppHandler(http.server.BaseHTTPRequestHandler): #handles the GET and POST requests
+    def do_GET(self): #handles GET requests
+        if self.path == '/' or self.path == '/dashboard': #if the path is / or /dashboard
+            self.send_response(200) #sends a response of 200
+            self.send_header('Content-type', 'text/html; charset=utf-8') #sends the content type
+            self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate') #sends the cache control
             self.end_headers()
             
             # Dynamically generate and stream the HTML exactly like a modern server

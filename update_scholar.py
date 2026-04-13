@@ -7,8 +7,8 @@ from bs4 import BeautifulSoup
 SCHOLAR_ID = "g4RBaCQAAAAJ"
 URL = f"https://scholar.google.com/citations?user={SCHOLAR_ID}&hl=en"
 
-def fetch_publications():
-    print(f"Fetching publications for Google Scholar ID: {SCHOLAR_ID}...")
+def fetch_publications(): #fetches the publications
+    print(f"Fetching publications for Google Scholar ID: {SCHOLAR_ID}...") #prints that the publications are being fetched
     
     # Create an unverified SSL context to avoid certificate errors on Windows
     ctx = ssl.create_default_context()
@@ -22,10 +22,10 @@ def fetch_publications():
     )
     
     try:
-        html = urllib.request.urlopen(req, context=ctx).read()
+        html = urllib.request.urlopen(req, context=ctx).read() #reads the HTML content
     except Exception as e:
-        print("Error fetching Google Scholar profile. Google might be blocking the request.")
-        print(f"Details: {e}")
+        print("Error fetching Google Scholar profile. Google might be blocking the request.") #prints that the publications are being fetched
+        print(f"Details: {e}") #prints the details of the error
         return []
 
     soup = BeautifulSoup(html, 'html.parser')
