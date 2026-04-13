@@ -66,13 +66,12 @@
 			<p>I have also created a few python scripts to supplement my archery training and coaching! See this arrow
 				volume tracker as an example!</p>
 			<h4>Arrow Tracker (Python Simulation)</h4>
-			<p>This is a simulation of my Python webserver architecture! It develops a 52 week training cycle, just like
-				my python scripts do.
+			<p>This is a simulation of my Python webserver! It develops a 52 week training cycle, just like
+				my python script does.
 				<br>
 				The script presents an "expected" training volume for each day, based on a base volume, and builds on
 				that each week. Once arrow volumes are entered, the number of arrows shot, and the scores recorded
-				appear on the calendar. If the training volume for that day is met, the day turns green, but if training
-				volume differs by 20 arrows or more, the day turns red.
+				appear on the calendar.
 				<br>
 				Feel free to add entries to try it out!
 			</p>
@@ -656,7 +655,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 							actInfo.scores.forEach(s => scorePoints.push({ x: d.date, y: s }));
 						}
 					}
-					
+
 					let todayStr = new Date().toISOString().split('T')[0];
 					if (hasActual || (d.date <= todayStr && d.arrows > 0)) {
 						let actualVol = hasActual ? actInfo.arrows : 0;
