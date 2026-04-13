@@ -93,6 +93,22 @@ def visualize_predictions(past_data, future_weeks, predictions):
     plt.tight_layout()
     plt.show()
 
+
+def generate_next_cycle(base_volume): # Generates a 4-week cycle with +10% progression.
+    """
+    Generates a 4-week cycle with +10% progression.
+    Returns a list of (arrow_volume, week_type).
+    """
+    next_base = round(base_volume * 1.10)
+
+    cycle = [
+        (next_base, "Base"),
+        (round(next_base * 1.10), "+10"),
+        (round(next_base * 1.20), "Max"),
+        (round(next_base * 0.75), "Recovery"),
+    ]
+
+    return cycle, next_base
 # ---------------------------------------------------------
 # MAIN
 # ---------------------------------------------------------
