@@ -3130,7 +3130,7 @@ body.is-touch .poptrox-popup .closer {
 	}
 
 	#header h1 br {
-		display: inline;
+		display: initial;
 	}
 
 	#header>.inner {
@@ -3199,7 +3199,7 @@ body.is-touch .poptrox-popup .closer {
 	}
 
 	#header h1 br {
-		display: inline;
+		display: initial;
 	}
 
 	/* Footer */
@@ -3335,7 +3335,7 @@ body.is-touch .poptrox-popup .closer {
 	}
 
 	#header h1 br {
-		display: inline;
+		display: initial;
 	}
 
 	/* Footer */
