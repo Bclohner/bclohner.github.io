@@ -177,8 +177,9 @@
 				volume affects your scores. Select a future date to predict the training phase, expected arrow
 				volume, and your predicted score.<br>The idea is that your scores should vary slightly with arrow
 				volume, particularly when your volume is above your average, or after a rest week of lower volume.
-				<br> Feel free to test the simulation yourself!</p>
-			
+				<br> Feel free to test the simulation yourself!
+			</p>
+
 			<div class="row gtr-uniform">
 				<div class="col-6 col-12-xsmall">
 					<input type="date" id="predictor-date" value=""
@@ -238,24 +239,36 @@
 			<br>
 
 			<h3>Photo Editing</h3>
-			<p>I also have experience with photo editing! Using software like Lightroom and Photoshop, I can enhance lighting, correct colors, and bring out the best details in a photograph. Here is an example of a sunset image before and after editing.</p>
+			<p>I also have experience with photo editing! Using software like GIMP and Photoshop, I can enhance
+				lighting, correct colors, and remove unwanted objects from photos. Here is an example of a sunset image
+				I took. The photo was taken through a dirty car window. I used GIMP to remove some of the spots from the
+				window. Click on the photo to see the before!</p>
 
-			<div style="overflow: auto;">
-				<span class="image left" style="max-width: 48%; margin-right: 2%;">
-					<img src="images/SunsetImageBefore.jpg" alt="Sunset Before Editing" />
-					<p style="text-align: center; font-size: 0.9em; margin-top: 10px;"><em>Before</em></p>
-				</span>
-				<span class="image right" style="max-width: 48%; margin-left: 2%;">
-					<img src="images/SunsetImageAfter.jpg" alt="Sunset After Editing" />
-					<p style="text-align: center; font-size: 0.9em; margin-top: 10px;"><em>After</em></p>
-				</span>
+			<div
+				style="text-align: center; margin-bottom: 2em; max-width: 800px; margin-left: auto; margin-right: auto;">
+				<p style="font-size: 0.9em; margin-bottom: 15px;"><em>Click the image to reveal the original "Before"
+						version underneath!</em></p>
+				<div class="image fit"
+					style="position: relative; cursor: pointer; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"
+					onclick="const afterImg = document.getElementById('sunset-after'); const lbl = document.getElementById('sunset-label'); if(afterImg.style.opacity == 0) { afterImg.style.opacity = 1; lbl.innerText = 'After'; } else { afterImg.style.opacity = 0; lbl.innerText = 'Before'; }">
+					<img src="images/SunsetImageBefore.jpg" alt="Sunset Before Editing"
+						style="display: block; width: 100%;" />
+					<img id="sunset-after" src="images/SunsetImageAfter.jpg" alt="Sunset After Editing"
+						style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: opacity 0.4s ease; opacity: 1;" />
+
+					<div id="sunset-label"
+						style="position: absolute; bottom: 15px; left: 15px; background: rgba(0,0,0,0.7); color: white; padding: 5px 15px; border-radius: 4px; font-weight: bold; pointer-events: none; z-index: 10;">
+						After</div>
+				</div>
 			</div>
 			<div style="clear: both;"></div>
 			<br>
 			<br>
 			<h3>Other skills</h3>
-			<p>In addition to these skills, I am also familiar with using photoshop, canva, and several video editing
-				softwares. I learn new things quickly, and I am always looking to expand my skill set!</p>
+			<p>In addition to these skills, I am also familiar with using Matlab for inverse dynamics, and Canva and
+				video editing
+				softwares for more creative projects. I learn new things quickly, and I am always looking to expand my
+				skill set!</p>
 			<hr />
 
 			<h3>Future Goals</h3>
@@ -897,7 +910,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 			};
 
 			// Score Predictor Logic
-			document.getElementById('predictor-btn').addEventListener('click', function() {
+			document.getElementById('predictor-btn').addEventListener('click', function () {
 				const targetDate = document.getElementById('predictor-date').value;
 				const resultDiv = document.getElementById('predictor-result');
 				const outputP = document.getElementById('predictor-output');
@@ -940,9 +953,9 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 				let b = meanY - m * meanX;
 
 				// Find Cycle info for target date
-				let earliestDateStr = arrowData.length > 0 ? [...arrowData].sort((a,b)=>new Date(a.date)-new Date(b.date))[0].date : new Date().toISOString().split('T')[0];
+				let earliestDateStr = arrowData.length > 0 ? [...arrowData].sort((a, b) => new Date(a.date) - new Date(b.date))[0].date : new Date().toISOString().split('T')[0];
 				let expectedCycle = getYearCycle(new Date(earliestDateStr));
-				
+
 				let cycleDay = expectedCycle.find(d => d.date === targetDate);
 
 				if (!cycleDay) {
