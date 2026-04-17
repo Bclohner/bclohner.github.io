@@ -532,6 +532,46 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 	<script src="assets/js/breakpoints.min.js"></script>
 	<script src="assets/js/util.js"></script>
 	<script src="assets/js/main.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const carousel = document.querySelector('.photo-carousel');
+			if (!carousel) return;
+			let autoScrollInterval;
+
+			const startAutoScroll = () => {
+				// Prevent duplicate intervals
+				if (autoScrollInterval) clearInterval(autoScrollInterval);
+				autoScrollInterval = setInterval(() => {
+					// Check if we are at or near the end
+					if (carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 10) {
+						// Scroll back to start
+						carousel.scrollTo({ left: 0, behavior: 'smooth' });
+					} else {
+						// Scroll right by one card
+						const firstCard = carousel.querySelector('.carousel-card');
+						const cardWidth = firstCard ? firstCard.clientWidth + 20 : 300; // +20 for gap
+						
+						carousel.scrollBy({ left: cardWidth, behavior: 'smooth' });
+					}
+				}, 3000); // Rotate every 3 seconds
+			};
+
+			const stopAutoScroll = () => {
+				if (autoScrollInterval) clearInterval(autoScrollInterval);
+			};
+
+			// Start automatically
+			startAutoScroll();
+
+			// Pause when mouse hovers
+			carousel.addEventListener('mouseenter', stopAutoScroll);
+			carousel.addEventListener('mouseleave', startAutoScroll);
+
+			// Pause during touch events
+			carousel.addEventListener('touchstart', stopAutoScroll, {passive: true});
+			carousel.addEventListener('touchend', startAutoScroll, {passive: true});
+		});
+	</script>
 
 </body>
 
