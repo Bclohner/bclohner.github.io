@@ -152,8 +152,8 @@
 				<p style="margin-bottom: 10px;">Want to run the full thing? Click the button below to download the
 					python source script!</p>
 				<br>
-				<a href="ArrowTracker.py" download="ArrowTracker.py"
-					class="button icon solid fa-download">Download Python Source Script</a>
+				<a href="ArrowTracker.py" download="ArrowTracker.py" class="button icon solid fa-download">Download
+					Python Source Script</a>
 			</div>
 			<div style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
 				<p style="margin-bottom: 10px;">Here is an extension of the Arrow Tracker python script that predicts
@@ -165,28 +165,36 @@
 						record data first.</em>
 				</p>
 				<br>
-				<a href="ScorePredictor.py" download="ScorePredictor.py"
-					class="button icon solid fa-download">Download Python Predictor Script</a>
+				<a href="ScorePredictor.py" download="ScorePredictor.py" class="button icon solid fa-download">Download
+					Python Predictor Script</a>
 			</div>
 
 			<!-- Score Predictor Simulation Layout -->
-			<div style="background: white; padding: 30px; border-radius: 8px; margin-bottom: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-				<h4 style="color: black; margin-top: 0;">Score Predictor (Simulation)</h4>
-				<p style="color: #444;">This interactive tool estimates your future archery scores! It runs a linear regression model on the simulated data you log in the Arrow Tracker above, figuring out how arrow volume affects your scores. Select a future date to predict the training phase, expected arrow volume, and your predicted score.</p>
-				<div class="row gtr-uniform">
-					<div class="col-6 col-12-xsmall">
-						<input type="date" id="predictor-date" value=""
-							style="color: black; background-color: #fff; border: 2px solid #ccc; border-radius: 4px; padding: 0.5em; height: 3em; width: 100%;" />
-					</div>
-					<div class="col-6 col-12-xsmall">
-						<button id="predictor-btn" class="button primary fit">Predict Score</button>
-					</div>
+			<hr>
+			<h4>Score Predictor (Simulation)</h4>
+			<p>This interactive tool estimates your future archery scores! It runs a linear
+				regression model on the simulated data you log in the Arrow Tracker above, figuring out how arrow
+				volume affects your scores. Select a future date to predict the training phase, expected arrow
+				volume, and your predicted score.<br>The idea is that your scores should vary slightly with arrow
+				volume, particularly when your volume is above your average, or after a rest week of lower volume.
+				<br> Feel free to test the simulation yourself!</p>
+			
+			<div class="row gtr-uniform">
+				<div class="col-6 col-12-xsmall">
+					<input type="date" id="predictor-date" value=""
+						style="color: black; background-color: #fff; border: 2px solid #ccc; border-radius: 4px; padding: 0.5em; height: 3em; width: 100%;" />
 				</div>
-				<div id="predictor-result" style="margin-top: 20px; padding: 20px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; display: none; color: black;">
-					<h5 style="margin-top: 0; color: black; border-bottom: 2px solid #ddd; padding-bottom: 10px;">🎯 Prediction Results</h5>
-					<p id="predictor-output" style="margin-bottom: 0;"></p>
+				<div class="col-6 col-12-xsmall">
+					<button id="predictor-btn" class="button primary fit">Predict Score</button>
 				</div>
 			</div>
+			<div id="predictor-result"
+				style="background: white; padding: 20px; border-radius: 8px; margin: 30px 0 40px 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none; color: black;">
+				<h5 style="color: black; border-bottom: 2px solid #efefef; padding-bottom: 10px; margin-top: 0;">🎯
+					Prediction Results</h5>
+				<p id="predictor-output" style="margin-bottom: 0;"></p>
+			</div>
+			<br>
 			<div>
 				<h3>Microsoft Office</h3>
 				<p>I have a strong command of the Microsoft Office Suite, including Word, Powerpoint and Excel.
@@ -870,6 +878,82 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 				arrowData.splice(index, 1);
 				renderTracker();
 			};
+
+			// Score Predictor Logic
+			document.getElementById('predictor-btn').addEventListener('click', function() {
+				const targetDate = document.getElementById('predictor-date').value;
+				const resultDiv = document.getElementById('predictor-result');
+				const outputP = document.getElementById('predictor-output');
+
+				if (!targetDate) {
+					alert("Please enter a valid date.");
+					return;
+				}
+
+				// Extract data points for linear regression
+				let dataPoints = [];
+				arrowData.forEach(entry => {
+					if (entry.scores && entry.scores.length > 0) {
+						entry.scores.forEach(s => {
+							dataPoints.push({ x: entry.arrows, y: s });
+						});
+					}
+				});
+
+				if (dataPoints.length === 0) {
+					resultDiv.style.display = 'block';
+					outputP.innerHTML = "Not enough data! Please log some arrow volumes with scores in the tracker above first.";
+					return;
+				}
+
+				// Linear Regression
+				let sumX = 0, sumY = 0;
+				let n = dataPoints.length;
+				dataPoints.forEach(p => { sumX += p.x; sumY += p.y; });
+				let meanX = sumX / n;
+				let meanY = sumY / n;
+
+				let numerator = 0, denominator = 0;
+				dataPoints.forEach(p => {
+					numerator += (p.x - meanX) * (p.y - meanY);
+					denominator += Math.pow(p.x - meanX, 2);
+				});
+
+				let m = denominator === 0 ? 0 : numerator / denominator;
+				let b = meanY - m * meanX;
+
+				// Find Cycle info for target date
+				let earliestDateStr = arrowData.length > 0 ? [...arrowData].sort((a,b)=>new Date(a.date)-new Date(b.date))[0].date : new Date().toISOString().split('T')[0];
+				let expectedCycle = getYearCycle(new Date(earliestDateStr));
+				
+				let cycleDay = expectedCycle.find(d => d.date === targetDate);
+
+				if (!cycleDay) {
+					resultDiv.style.display = 'block';
+					outputP.innerHTML = `Date <strong>${targetDate}</strong> is before your training started or out of range.`;
+					return;
+				}
+
+				let expectedVolume = cycleDay.arrows;
+				let predScore = m * expectedVolume + b;
+
+				// Peak Bonus
+				if (cycleDay.phase === "Recovery Week -25%") {
+					predScore += 2; // PEAK_BONUS = 2
+				}
+
+				// Clamp
+				predScore = Math.max(0, Math.min(predScore, 300));
+				predScore = predScore.toFixed(1);
+
+				resultDiv.style.display = 'block';
+				outputP.innerHTML = `
+					Date <strong>${targetDate}</strong> is in: <br>
+					<strong>Phase:</strong> ${cycleDay.phase} <br>
+					<strong>Expected Arrow Volume:</strong> ${expectedVolume} <br><br>
+					<strong>Predicted Score:</strong> <span style="font-size: 1.2em; font-weight: bold; color: #e74c3c;">${predScore}</span>
+				`;
+			});
 
 			// Initialize
 			renderTracker();
