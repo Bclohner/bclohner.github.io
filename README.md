@@ -13,6 +13,7 @@ Welcome to my website! This is intended to act as a virtual portfolio to demonst
 - **CSS**: For the styling of the website.
 - **JavaScript**: For the interactive elements of the website.
 - **Python**: For the backend of the website.
+- **GIMP**: For photo editing.
 - **Flask**: For the web framework of the website.
 - **SQLite**: For the database of the website.
 - **Git**: For version control of the website.
