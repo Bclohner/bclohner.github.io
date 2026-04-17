@@ -153,7 +153,7 @@
 					python source script!</p>
 				<br>
 				<a href="ArrowTracker.py" download="ArrowTracker.py"
-					class="button primary large icon solid fa-download">Download Python Source Script</a>
+					class="button icon solid fa-download">Download Python Source Script</a>
 			</div>
 			<div style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
 				<p style="margin-bottom: 10px;">Here is an extension of the Arrow Tracker python script that predicts
@@ -166,9 +166,27 @@
 				</p>
 				<br>
 				<a href="ScorePredictor.py" download="ScorePredictor.py"
-					class="button primary large icon solid fa-download">Download Python Predictor Script</a>
+					class="button icon solid fa-download">Download Python Predictor Script</a>
 			</div>
 
+			<!-- Score Predictor Simulation Layout -->
+			<div style="background: white; padding: 30px; border-radius: 8px; margin-bottom: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+				<h4 style="color: black; margin-top: 0;">Score Predictor (Simulation)</h4>
+				<p style="color: #444;">This interactive tool estimates your future archery scores! It runs a linear regression model on the simulated data you log in the Arrow Tracker above, figuring out how arrow volume affects your scores. Select a future date to predict the training phase, expected arrow volume, and your predicted score.</p>
+				<div class="row gtr-uniform">
+					<div class="col-6 col-12-xsmall">
+						<input type="date" id="predictor-date" value=""
+							style="color: black; background-color: #fff; border: 2px solid #ccc; border-radius: 4px; padding: 0.5em; height: 3em; width: 100%;" />
+					</div>
+					<div class="col-6 col-12-xsmall">
+						<button id="predictor-btn" class="button primary fit">Predict Score</button>
+					</div>
+				</div>
+				<div id="predictor-result" style="margin-top: 20px; padding: 20px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; display: none; color: black;">
+					<h5 style="margin-top: 0; color: black; border-bottom: 2px solid #ddd; padding-bottom: 10px;">🎯 Prediction Results</h5>
+					<p id="predictor-output" style="margin-bottom: 0;"></p>
+				</div>
+			</div>
 			<div>
 				<h3>Microsoft Office</h3>
 				<p>I have a strong command of the Microsoft Office Suite, including Word, Powerpoint and Excel.
